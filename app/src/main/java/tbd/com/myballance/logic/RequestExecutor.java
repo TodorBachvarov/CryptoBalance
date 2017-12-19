@@ -71,7 +71,7 @@ public class RequestExecutor {
     }
 
     public void loadMarket(int limit,final RequestListener listener){
-        String url = "https://api.coinmarketcap.com/v1/ticker/?limit="+limit;
+        String url = "https://api.coinmarketcap.com/v1/ticker/?convert=EUR&limit="+limit;
         JsonArrayRequest JsonRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
 
             @Override

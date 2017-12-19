@@ -54,6 +54,18 @@ public class WalletManager {
 
     public static class Balance extends ArrayList<OwnedCryptoItem>{
 
+        public double getTotalEUR(CoinMarketStatistics statistics){
+            return getStatistics(statistics, new Listener() {
+                @Override
+                public double getTotal(double value, FreshCryptoState stat) {
+                    if(stat!=null && value>0)
+                        return stat.getPriceEur()*value;
+                    else
+                        return 0;
+                }
+            });
+        }
+
         public double getTotalUSD(CoinMarketStatistics statistics){
             return getStatistics(statistics, new Listener() {
                 @Override
@@ -76,6 +88,11 @@ public class WalletManager {
                         return 0;
                 }
             });
+        }
+
+        public double getTotalBGN(CoinMarketStatistics statistics){
+            double euroToBGN = 1.95652967;
+            return getTotalEUR(statistics)* euroToBGN;
         }
 
         private double getStatistics(CoinMarketStatistics statistics,Listener listener){

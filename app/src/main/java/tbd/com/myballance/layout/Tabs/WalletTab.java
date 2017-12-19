@@ -39,6 +39,12 @@ public class WalletTab extends MainTab {
     protected void init(View rootView) {
         mListView = (ListView)rootView.findViewById(R.id.wallet_list);
         mTotaViewlUsd = rootView.findViewById(R.id.wallet_total_usd);
+        mTotaViewlUsd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchTotalFiatCurrency();
+            }
+        });
         mTotaViewlBtc = rootView.findViewById(R.id.wallet_total_btc);
         mAdapter = new WalletAdapter(getActivity(),R.layout.wallet_list_item ,new ArrayList<OwnedCryptoItem>());
         mListView.setAdapter(mAdapter);
@@ -81,15 +87,48 @@ public class WalletTab extends MainTab {
         CoinMarketStatistics statistics = LogicManager.getInstance().getCoinMarketStatistics();
         if(balance!=null && statistics!=null) {
             if (mTotaViewlUsd != null) {
+                //Total in usd
                 double usdPrice = balance.getTotalUSD(statistics);
                 mTotaViewlUsd.setText(String.format("$\n%.2f", usdPrice));
+
+                //Click on the view to see the different currency value
+//                //Total Eur
+//                double eurPrice = balance.getTotalEUR(statistics);
+//                mTotaViewlUsd.setText(String.format("€ \n%.2f", eurPrice));
+//
+//                //Total BGN
+//                double bgnPrice = balance.getTotalBGN(statistics);
+//                mTotaViewlUsd.setText(String.format("BGN \n%.2f", bgnPrice));
             }
-            if (mTotaViewlUsd != null) {
+            if (mTotaViewlBtc != null) {
                 double btcPrice =balance.getTotalBtc(statistics);
-                mTotaViewlBtc.setText(String.format("BTC %.6f", btcPrice));
+                mTotaViewlBtc.setText(String.format("BTC          %.6f", btcPrice));
             }
         }
     }
+
+    protected void switchTotalFiatCurrency(){
+        WalletManager.Balance balance = WalletManager.getInstance().getBalance();
+        CoinMarketStatistics statistics = LogicManager.getInstance().getCoinMarketStatistics();
+        if(mTotaViewlUsd != null && balance!=null && statistics!=null){
+            String currentTotal = mTotaViewlUsd.getText()!=null ? mTotaViewlUsd.getText().toString():null;
+            String currencySymbol = "$";
+            double balanceValue = balance.getTotalUSD(statistics);
+            if(currentTotal.contains("$")){
+                //Switch to euro
+                currencySymbol = "€";
+                balanceValue = balance.getTotalEUR(statistics);
+            } else if (currentTotal.contains("€")){
+                currencySymbol = "BGN";
+                balanceValue = balance.getTotalBGN(statistics);
+            }
+            //else its BGN so show usd
+            mTotaViewlUsd.setText(String.format(currencySymbol+" \n%.2f", balanceValue));
+
+        }
+    }
+
+
 
     private class WalletAdapter extends ArrayAdapter<OwnedCryptoItem> {
 

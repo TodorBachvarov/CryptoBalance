@@ -29,15 +29,17 @@ public class FreshCryptoState {
     private String symbol;
     private String priceUsd;
     private String PriceBtc;
+    private String priceEur;
 
-    public static FreshCryptoState parce(JSONObject state){
+    public static FreshCryptoState parce(JSONObject state) {
         FreshCryptoState stateResult = new FreshCryptoState();
-        if(state!=null) {
-            stateResult.setId(state.optString("id",null));
-            stateResult.setmName(state.optString("name",null));
-            stateResult.setSymbol(state.optString("symbol",null));
-            stateResult.setPriceUsd(state.optString("price_usd",null));
-            stateResult.setPriceBtc(state.optString("price_btc",null));
+        if (state != null) {
+            stateResult.setId(state.optString("id", null));
+            stateResult.setmName(state.optString("name", null));
+            stateResult.setSymbol(state.optString("symbol", null));
+            stateResult.setPriceUsd(state.optString("price_usd", null));
+            stateResult.setPriceBtc(state.optString("price_btc", null));
+            stateResult.setPriceEur(state.optString("price_eur", null));
         }
 
         return stateResult;
@@ -91,5 +93,12 @@ public class FreshCryptoState {
         return PriceBtc!=null && !PriceBtc.isEmpty() ? Double.valueOf(PriceBtc) : -1;
     }
 
+    public double getPriceEur(){
+        return priceEur!=null && !priceEur.isEmpty() ? Double.valueOf(priceEur) : -1;
+    }
 
+
+    public void setPriceEur(String priceEur) {
+        this.priceEur = priceEur;
+    }
 }
