@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorWatchList">#0f0f0f</color>
+    <color name="colorWatchlist_higlightet">#5e5e5e</color>
+
+
+    <color name="colorProfit_red">#ee1b1b</color>
+    <color name="colorProfit_green">#47c026</color>
+
+
 </resources>

@@ -38,7 +38,7 @@ public class LogicManager {
     }
 
     public void refreshMarker(){
-        RequestExecutor.getInstance().loadMarket(20, new RequestExecutor.RequestListener() {
+        RequestExecutor.getInstance().loadMarket(50, new RequestExecutor.RequestListener() {
             @Override
             public void onSuccess(Object result) {
                 if(result instanceof JSONArray){

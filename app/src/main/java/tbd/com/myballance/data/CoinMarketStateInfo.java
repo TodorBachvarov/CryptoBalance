@@ -7,7 +7,7 @@ import org.json.JSONObject;
  */
 
 //Loaded state from external Api (cryptomarketcap.com)
-public class FreshCryptoState {
+public class CoinMarketStateInfo {
 /*    {
         "id": "bitcoin",
             "name": "Bitcoin",
@@ -30,9 +30,10 @@ public class FreshCryptoState {
     private String priceUsd;
     private String PriceBtc;
     private String priceEur;
+    private double changeLasHour;
 
-    public static FreshCryptoState parce(JSONObject state) {
-        FreshCryptoState stateResult = new FreshCryptoState();
+    public static CoinMarketStateInfo parce(JSONObject state) {
+        CoinMarketStateInfo stateResult = new CoinMarketStateInfo();
         if (state != null) {
             stateResult.setId(state.optString("id", null));
             stateResult.setmName(state.optString("name", null));
@@ -40,12 +41,14 @@ public class FreshCryptoState {
             stateResult.setPriceUsd(state.optString("price_usd", null));
             stateResult.setPriceBtc(state.optString("price_btc", null));
             stateResult.setPriceEur(state.optString("price_eur", null));
+            String percentageChangeHour = state.optString("percent_change_1h", null);
+            stateResult.setChangeLastHour(percentageChangeHour!=null ? Double.valueOf(percentageChangeHour):0.0);
         }
 
         return stateResult;
     }
 
-    public FreshCryptoState(){
+    public CoinMarketStateInfo(){
 
     }
 
@@ -67,6 +70,10 @@ public class FreshCryptoState {
 
     public void setPriceBtc(String priceBtc) {
         PriceBtc = priceBtc;
+    }
+
+    public void setChangeLastHour(double percentage) {
+        changeLasHour = percentage;
     }
 
     public String getId() {
@@ -100,5 +107,12 @@ public class FreshCryptoState {
 
     public void setPriceEur(String priceEur) {
         this.priceEur = priceEur;
+    }
+
+    //Change
+
+
+    public double getChangeLasHour() {
+        return changeLasHour;
     }
 }

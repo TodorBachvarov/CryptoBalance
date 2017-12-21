@@ -15,7 +15,7 @@ import java.util.List;
 import tbd.com.myballance.R;
 import tbd.com.myballance.SettingsManager;
 import tbd.com.myballance.data.CoinMarketStatistics;
-import tbd.com.myballance.data.FreshCryptoState;
+import tbd.com.myballance.data.CoinMarketStateInfo;
 import tbd.com.myballance.data.OwnedCryptoItem;
 import tbd.com.myballance.logic.LogicManager;
 import tbd.com.myballance.logic.WalletManager;
@@ -26,7 +26,9 @@ import tbd.com.myballance.logic.WalletManager;
 
 public class WalletTab extends MainTab {
     TextView       mTotaViewlUsd;
+    TextView       mTotalVelocitylUsd;
     TextView       mTotaViewlBtc;
+    TextView       mTotalVelocitylBtc;
     ListView      mListView;
     WalletAdapter mAdapter;
 
@@ -45,7 +47,15 @@ public class WalletTab extends MainTab {
                 switchTotalFiatCurrency();
             }
         });
+        mTotalVelocitylUsd = rootView.findViewById(R.id.wallet_total_velocity_usd);
+        mTotalVelocitylBtc = rootView.findViewById(R.id.wallet_total_velocity_btc);
         mTotaViewlBtc = rootView.findViewById(R.id.wallet_total_btc);
+        mTotaViewlBtc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switchTotalCriptoCurrency();
+            }
+        });
         mAdapter = new WalletAdapter(getActivity(),R.layout.wallet_list_item ,new ArrayList<OwnedCryptoItem>());
         mListView.setAdapter(mAdapter);
         LogicManager.getInstance().addListener(new LogicManager.LogicListener() {
@@ -99,11 +109,50 @@ public class WalletTab extends MainTab {
 //                //Total BGN
 //                double bgnPrice = balance.getTotalBGN(statistics);
 //                mTotaViewlUsd.setText(String.format("BGN \n%.2f", bgnPrice));
+
+//                updateProfitState(mTotaViewlUsd,balance.getTotalVelocityUSD(statistics,balance.));
+
+                if(mTotalVelocitylUsd!=null){
+                    double velocityUsd = balance.getTotalVelocityUSD(statistics,usdPrice);
+                    String velosityPrefix = velocityUsd>0?"Gain":"Loss";
+
+                    mTotalVelocitylUsd.setText(String.format("%s: %.4f", velosityPrefix, velocityUsd)+" %");
+                    updateProfitState(mTotalVelocitylUsd,velocityUsd);
+                }
             }
-            if (mTotaViewlBtc != null) {
-                double btcPrice =balance.getTotalBtc(statistics);
-                mTotaViewlBtc.setText(String.format("BTC          %.6f", btcPrice));
-            }
+
+            String basisId = SettingsManager.sCryptoCurrencyIDs.get(SettingsManager.CRIPTO_BASIS);
+            double total = balance.getTotalBtc(statistics);
+            double velocity = balance.getTotalVelocityCripto(statistics,total,basisId,balance.getItemById(SettingsManager.CRIPTO_BASIS));
+            populateTotalBTCViews(total,velocity,SettingsManager.CRIPTO_BASIS);
+
+        }
+    }
+
+    private void populateTotalBTCViews(double total,double velocity , String currency){
+        if (mTotaViewlBtc != null) {
+            mTotaViewlBtc.setText(currency+String.format("                  %.6f", total));
+        }
+
+        if(mTotalVelocitylBtc!=null){
+
+            String velosityPrefix = velocity>0?"Gain":"Loss";
+
+            mTotalVelocitylBtc.setText(String.format("%s: %.4f", velosityPrefix, velocity)+" %");
+            updateProfitState(mTotalVelocitylBtc,velocity);
+        }
+    }
+
+    protected void switchTotalCriptoCurrency(){
+        WalletManager.Balance balance = WalletManager.getInstance().getBalance();
+        CoinMarketStatistics statistics = LogicManager.getInstance().getCoinMarketStatistics();
+        if(mTotaViewlBtc != null && balance!=null && statistics!=null){
+            String basis = SettingsManager.switchCriptoBasis();
+            String basisId = SettingsManager.sCryptoCurrencyIDs.get(basis);
+            double total = balance.getTotalBtc(statistics);
+            double velocity = balance.getTotalVelocityCripto(statistics,total,basisId ,balance.getItemById(basis));
+
+            populateTotalBTCViews(total,velocity,basis);
         }
     }
 
@@ -128,12 +177,30 @@ public class WalletTab extends MainTab {
         }
     }
 
+    //Utils ui colours
+    protected void setItemBackgroundColor(View item,double price){
+        if(price<1){
+            item.setBackgroundResource(R.color.colorWatchlist_higlightet);
+        } else {
+            item.setBackgroundResource(R.color.colorWatchList);
+        }
+    }
+
+    protected void updateProfitState(TextView view, double change){
+        if(view == null)
+            return ;
+
+        int color = change>=0 ? R.color.colorProfit_green : R.color.colorProfit_red;
+        if(isAdded())
+            view.setTextColor(getResources().getColor(color));
+    }
+
 
 
     private class WalletAdapter extends ArrayAdapter<OwnedCryptoItem> {
 
         public WalletAdapter(@NonNull Context context, int resource, List<OwnedCryptoItem> items) {
-            super(context,R.layout.wallet_list_item,items);
+            super(context, R.layout.wallet_list_item, items);
         }
 
 
@@ -161,17 +228,23 @@ public class WalletTab extends MainTab {
                     valueField.setText(String.valueOf(item.getValue()));
                 }
 
-                if (currencyField != null) {
-                    currencyField.setText(item.getCurrency());
-                }
-                CoinMarketStatistics statistics =  LogicManager.getInstance().getCoinMarketStatistics();
+                CoinMarketStatistics statistics = LogicManager.getInstance().getCoinMarketStatistics();
                 if (statistics != null) {
-                    FreshCryptoState state = statistics.get(SettingsManager.getInstance().getCryptoIdByName(item.getCurrency()));
+                    CoinMarketStateInfo state = statistics.get(SettingsManager.getInstance().getCryptoIdByName(item.getCurrency()));
 
-                    if(state!=null) {
+                    if (currencyField != null) {
+                        double totalUsd =  WalletManager.getInstance().getBalance().getTotalUSD(statistics);
+                        double weight = WalletManager.getInstance().getBalance().getPercentageWeight(item,state,totalUsd);
+                        String text = String.format(" %.1f",weight) + "% ";
+                        currencyField.setText(item.getCurrency() +"\n" + text);
+                    }
+
+                    if (state != null) {
                         if (dollarValue != null) {
                             double usdPrice = item.getValue() * state.getPriceUsd();
                             dollarValue.setText(String.format("$ %.2f", usdPrice));
+                            setItemBackgroundColor(v, usdPrice);
+                            updateProfitState(dollarValue, state.getChangeLasHour());
                         }
 
                         if (dollarRate != null) {
@@ -185,6 +258,5 @@ public class WalletTab extends MainTab {
 
             return v;
         }
-
     }
 }

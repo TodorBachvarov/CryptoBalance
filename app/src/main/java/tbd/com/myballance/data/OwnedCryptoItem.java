@@ -39,10 +39,10 @@ public class OwnedCryptoItem {
 //    }
 
     //TMP
-    FreshCryptoState getMocFreshState(){
+    CoinMarketStateInfo getMocFreshState(){
         double btcUsd = 1920.00;
         double ethUsd = 760.00;
-        FreshCryptoState mocState = new FreshCryptoState();
+        CoinMarketStateInfo mocState = new CoinMarketStateInfo();
         mocState.setPriceUsd(String.valueOf(this.getCurrency().equalsIgnoreCase("btc")? btcUsd : ethUsd));
 
         return mocState;
@@ -52,5 +52,7 @@ public class OwnedCryptoItem {
     public static abstract class  RefreshListener{
         public abstract  void onRefreshDone(OwnedCryptoItem freshState);
     }
+
+
 
 }

@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Created by todorbachvarov on 17.12.17.
  */
 
-public class CoinMarketStatistics extends HashMap<String,FreshCryptoState> {
+public class CoinMarketStatistics extends HashMap<String,CoinMarketStateInfo> {
 
     public static CoinMarketStatistics load(JSONArray responce){
         CoinMarketStatistics result = new CoinMarketStatistics();
@@ -17,7 +17,7 @@ public class CoinMarketStatistics extends HashMap<String,FreshCryptoState> {
             for(int i=0 ; i <responce.length() ; i++){
                 JSONObject criptoData = responce.optJSONObject(i);
                 if(criptoData != null){
-                    result.put(criptoData.optString("id"),FreshCryptoState.parce(criptoData));
+                    result.put(criptoData.optString("id"), CoinMarketStateInfo.parce(criptoData));
                 }
             }
         }
