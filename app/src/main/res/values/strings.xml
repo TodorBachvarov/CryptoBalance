@@ -3,6 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Refresh</string>
+    <string name="title_set_interval">Change Interval</string>
 
     <string name="wallet_header_currency">CURRENCY</string>
     <string name="wallet_header_volume">VOLUME</string>

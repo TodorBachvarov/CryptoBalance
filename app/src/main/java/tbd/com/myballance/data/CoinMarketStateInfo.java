@@ -1,6 +1,10 @@
 package tbd.com.myballance.data;
 
+import android.util.Log;
+
 import org.json.JSONObject;
+
+import tbd.com.myballance.SettingsManager;
 
 /**
  * Created by todorbachvarov on 17.12.17.
@@ -31,6 +35,8 @@ public class CoinMarketStateInfo {
     private String PriceBtc;
     private String priceEur;
     private double changeLasHour;
+    private double changeLasDay;
+    private double changeLasWeek;
 
     public static CoinMarketStateInfo parce(JSONObject state) {
         CoinMarketStateInfo stateResult = new CoinMarketStateInfo();
@@ -42,7 +48,11 @@ public class CoinMarketStateInfo {
             stateResult.setPriceBtc(state.optString("price_btc", null));
             stateResult.setPriceEur(state.optString("price_eur", null));
             String percentageChangeHour = state.optString("percent_change_1h", null);
+            String percentageChangeDay = state.optString("percent_change_24h", null);
+            String percentageChangeWeek = state.optString("percent_change_7d", null);
             stateResult.setChangeLastHour(percentageChangeHour!=null ? Double.valueOf(percentageChangeHour):0.0);
+            stateResult.setChangeLastDay(percentageChangeDay!=null ? Double.valueOf(percentageChangeDay):0.0);
+            stateResult.setChangeLastWeek(percentageChangeWeek!=null ? Double.valueOf(percentageChangeWeek):0.0);
         }
 
         return stateResult;
@@ -74,6 +84,12 @@ public class CoinMarketStateInfo {
 
     public void setChangeLastHour(double percentage) {
         changeLasHour = percentage;
+    }
+    public void setChangeLastDay(double percentage) {
+        changeLasDay = percentage;
+    }
+    public void setChangeLastWeek(double percentage) {
+        changeLasWeek = percentage;
     }
 
     public String getId() {
@@ -110,9 +126,37 @@ public class CoinMarketStateInfo {
     }
 
     //Change
+    public double getChange(int interval){
+        switch (interval){
+            case (SettingsManager.TimeInterval.DAY_INTERVAL):return getChangeLasDay();
+            case (SettingsManager.TimeInterval.WEEK_INTERVAL):return getChangeLasWeek();
 
+//            (SettingsManager.TimeInterval.HOUR_INTERVAl)
+            default: return getChangeLasHour();
+        }
+    }
 
-    public double getChangeLasHour() {
+    private double getChangeLasHour() {
         return changeLasHour;
+    }
+    private double getChangeLasDay() {
+        return changeLasDay;
+    }
+    private double getChangeLasWeek() {
+        return changeLasWeek;
+    }
+
+    public double getPriceInCrypto(String cryptoBasis, CoinMarketStatistics statistics) {
+        double result = 0;
+        CoinMarketStateInfo basisInfo = statistics.get(SettingsManager.getInstance().getCryptoIdByName(cryptoBasis));
+        if(basisInfo==null){
+            Log.e("getPriceInCrypto","Missing Info for :"+cryptoBasis);
+            return result;
+        }
+        double itemPriceInBTC = getPriceUsd();
+        double basisPriceInBTC = basisInfo.getPriceUsd();
+        result = itemPriceInBTC!=0 && basisPriceInBTC!=0 ? itemPriceInBTC/basisPriceInBTC : result;
+
+        return result ;
     }
 }

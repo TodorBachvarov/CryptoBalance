@@ -67,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:background="#228b22"
+                android:background="@color/total_green"
                 android:text="TBD"
                 android:textAlignment="center"
                 android:textSize="40dip"
@@ -78,7 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0.5"
-                android:background="#228b22"
+                android:background="@color/total_green"
                 android:text="TBD"
                 android:textAlignment="center"
                 android:textSize="15dip"
@@ -100,7 +100,7 @@
                 android:textStyle="bold"
                 android:textSize="40dip"
                 android:text="TBD"
-                android:background="#FFD700"/>
+                android:background="@color/total_yellow"/>
 
             <TextView android:id="@+id/wallet_total_velocity_btc"
                 android:layout_width="match_parent"
@@ -110,7 +110,7 @@
                 android:textStyle="bold"
                 android:textSize="15dip"
                 android:text="TBD"
-                android:background="#FFD700"/>
+                android:background="@color/total_yellow"/>
     </LinearLayout>
     </LinearLayout>
 

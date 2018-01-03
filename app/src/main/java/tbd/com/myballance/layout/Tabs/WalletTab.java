@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -58,6 +59,7 @@ public class WalletTab extends MainTab {
         });
         mAdapter = new WalletAdapter(getActivity(),R.layout.wallet_list_item ,new ArrayList<OwnedCryptoItem>());
         mListView.setAdapter(mAdapter);
+        mListView.setOnItemClickListener(mItemClickListener);
         LogicManager.getInstance().addListener(new LogicManager.LogicListener() {
 
             @Override
@@ -99,7 +101,7 @@ public class WalletTab extends MainTab {
             if (mTotaViewlUsd != null) {
                 //Total in usd
                 double usdPrice = balance.getTotalUSD(statistics);
-                mTotaViewlUsd.setText(String.format("$\n%.2f", usdPrice));
+                mTotaViewlUsd.setText(usdPrice>1000?String.format("$ \n %,.0f", usdPrice):String.format("$\n %,.2f", usdPrice));
 
                 //Click on the view to see the different currency value
 //                //Total Eur
@@ -110,21 +112,20 @@ public class WalletTab extends MainTab {
 //                double bgnPrice = balance.getTotalBGN(statistics);
 //                mTotaViewlUsd.setText(String.format("BGN \n%.2f", bgnPrice));
 
-//                updateProfitState(mTotaViewlUsd,balance.getTotalVelocityUSD(statistics,balance.));
+//                updatePercentChangeColor(mTotaViewlUsd,balance.getTotalVelocityUSD(statistics,balance.));
 
                 if(mTotalVelocitylUsd!=null){
-                    double velocityUsd = balance.getTotalVelocityUSD(statistics,usdPrice);
-                    String velosityPrefix = velocityUsd>0?"Gain":"Loss";
-
-                    mTotalVelocitylUsd.setText(String.format("%s: %.4f", velosityPrefix, velocityUsd)+" %");
-                    updateProfitState(mTotalVelocitylUsd,velocityUsd);
+                    double velocityUsd = balance.getTotalVelocityUSD(statistics,usdPrice,SettingsManager.getInstance().CRIPTO_INTERVAL);
+                    populateTotalVelocityText(mTotalVelocitylUsd,velocityUsd);
+                    updatePercentChangeColor(mTotalVelocitylUsd,velocityUsd);
                 }
             }
 
             String basisId = SettingsManager.sCryptoCurrencyIDs.get(SettingsManager.CRIPTO_BASIS);
-            double total = balance.getTotalBtc(statistics);
-            double velocity = balance.getTotalVelocityCripto(statistics,total,basisId,balance.getItemById(SettingsManager.CRIPTO_BASIS));
-            populateTotalBTCViews(total,velocity,SettingsManager.CRIPTO_BASIS);
+            double totalBTC = balance.getTotalBtc(statistics);
+            double totalBasis = balance.getTotalInCripto(statistics,basisId);
+            double velocity = balance.getTotalVelocityCripto(statistics,totalBTC,basisId,balance.getItemById(SettingsManager.CRIPTO_BASIS));
+            populateTotalBTCViews(totalBasis,velocity,SettingsManager.CRIPTO_BASIS);
 
         }
     }
@@ -136,10 +137,8 @@ public class WalletTab extends MainTab {
 
         if(mTotalVelocitylBtc!=null){
 
-            String velosityPrefix = velocity>0?"Gain":"Loss";
-
-            mTotalVelocitylBtc.setText(String.format("%s: %.4f", velosityPrefix, velocity)+" %");
-            updateProfitState(mTotalVelocitylBtc,velocity);
+           populateTotalVelocityText(mTotalVelocitylBtc,velocity);
+            updatePercentChangeColor(mTotalVelocitylBtc,velocity);
         }
     }
 
@@ -149,10 +148,12 @@ public class WalletTab extends MainTab {
         if(mTotaViewlBtc != null && balance!=null && statistics!=null){
             String basis = SettingsManager.switchCriptoBasis();
             String basisId = SettingsManager.sCryptoCurrencyIDs.get(basis);
-            double total = balance.getTotalBtc(statistics);
-            double velocity = balance.getTotalVelocityCripto(statistics,total,basisId ,balance.getItemById(basis));
+            double totalInBTC = balance.getTotalBtc(statistics);
+            double totalInBasis = balance.getTotalInCripto(statistics,basisId);
+            double velocity = balance.getTotalVelocityCripto(statistics,totalInBTC,basisId ,balance.getItemById(basis));
 
-            populateTotalBTCViews(total,velocity,basis);
+            populateTotalBTCViews(totalInBasis,velocity,basis);
+            mAdapter.notifyDataSetChanged();
         }
     }
 
@@ -172,9 +173,19 @@ public class WalletTab extends MainTab {
                 balanceValue = balance.getTotalBGN(statistics);
             }
             //else its BGN so show usd
-            mTotaViewlUsd.setText(String.format(currencySymbol+" \n%.2f", balanceValue));
+            mTotaViewlUsd.setText(currencySymbol+"\n"+(balanceValue>1000?String.format("%,.0f", balanceValue):
+                                                                    String.format("%,.2f", balanceValue)));
 
         }
+    }
+
+    //Utils text
+    private void populateTotalVelocityText(TextView view, double velocity){
+        String velosity = velocity>0?"Gain":"Loss";
+        String interval =" last "+ SettingsManager.TimeInterval.getLabel(SettingsManager.getInstance().CRIPTO_INTERVAL);
+        String velosityInterval = velosity + interval;
+
+        view.setText(String.format("%s:\n %.4f", velosityInterval, velocity)+" %");
     }
 
     //Utils ui colours
@@ -186,7 +197,7 @@ public class WalletTab extends MainTab {
         }
     }
 
-    protected void updateProfitState(TextView view, double change){
+    protected void updatePercentChangeColor(TextView view, double change){
         if(view == null)
             return ;
 
@@ -195,7 +206,17 @@ public class WalletTab extends MainTab {
             view.setTextColor(getResources().getColor(color));
     }
 
+    private AdapterView.OnItemClickListener mItemClickListener = new AdapterView.OnItemClickListener(){
 
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            //TODO listener
+            OwnedCryptoItem item = mAdapter.getItem(i);
+            SettingsManager.CRIPTO_BASIS = item.getCurrency();
+            mAdapter.notifyDataSetChanged();
+            updateTotals();
+        }
+    };
 
     private class WalletAdapter extends ArrayAdapter<OwnedCryptoItem> {
 
@@ -223,6 +244,10 @@ public class WalletTab extends MainTab {
                 TextView currencyField = v.findViewById(R.id.currency);
                 final TextView dollarValue = v.findViewById(R.id.wallet_item_dollar_value);
                 final TextView dollarRate = v.findViewById(R.id.wallet_item_dollar_rate);
+                final TextView percentCurrency = v.findViewById(R.id.currency_percent);
+                final TextView percentVolume = v.findViewById(R.id.value_percent);
+                final TextView percentRate = v.findViewById(R.id.wallet_item_dollar_rate_percent);
+                final TextView percentProfit = v.findViewById(R.id.wallet_item_dollar_value_percent);
 
                 if (valueField != null) {
                     valueField.setText(String.valueOf(item.getValue()));
@@ -233,24 +258,65 @@ public class WalletTab extends MainTab {
                     CoinMarketStateInfo state = statistics.get(SettingsManager.getInstance().getCryptoIdByName(item.getCurrency()));
 
                     if (currencyField != null) {
-                        double totalUsd =  WalletManager.getInstance().getBalance().getTotalUSD(statistics);
-                        double weight = WalletManager.getInstance().getBalance().getPercentageWeight(item,state,totalUsd);
-                        String text = String.format(" %.1f",weight) + "% ";
-                        currencyField.setText(item.getCurrency() +"\n" + text);
+                        currencyField.setText(item.getCurrency());
                     }
 
                     if (state != null) {
                         if (dollarValue != null) {
                             double usdPrice = item.getValue() * state.getPriceUsd();
-                            dollarValue.setText(String.format("$ %.2f", usdPrice));
+                            dollarValue.setText(usdPrice>1000?String.format("$ %,.0f", usdPrice):String.format("$ %,.2f", usdPrice));
                             setItemBackgroundColor(v, usdPrice);
-                            updateProfitState(dollarValue, state.getChangeLasHour());
+                            updatePercentChangeColor(dollarValue, state.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL));
                         }
 
                         if (dollarRate != null) {
                             double rate = state.getPriceUsd();
-                            if (rate > 0)
-                                dollarRate.setText(String.format(/*item.getCurrency()+*/"$ %.2f", rate));
+                            dollarRate.setText(rate>1000?String.format("$ %,.0f", rate):String.format("$ %,.2f", rate));
+                        }
+                        //Percent Views
+                        if (percentCurrency != null) {
+                            double totalUsd =  WalletManager.getInstance().getBalance().getTotalUSD(statistics);
+                            double weight = WalletManager.getInstance().getBalance().getPercentageWeight(item,state,totalUsd);
+                            percentCurrency.setText(String.format(" %.2f", weight) + "%");
+                        }
+                        if (percentVolume != null) {
+                            double rate = state.getPriceInCrypto(SettingsManager.getInstance().CRIPTO_BASIS,statistics);
+                            String text = "";
+                            int colourID = R.color.primary_text_color;
+                            if(item.getCurrency().equals(SettingsManager.CRIPTO_BASIS)) {
+                                 text = "BASIS";
+                                 colourID = R.color.total_yellow;
+                            } else {
+                                text = String.format(" %.6f ", rate) + SettingsManager.CRIPTO_BASIS;
+                                colourID = R.color.primary_text_color;
+                            }
+                            percentVolume.setText(text);
+                            percentVolume.setTextColor(getContext().getResources().getColor(colourID));
+//                            percentVolume.setText(String.format(" %.2f", rate) + "%");
+//                            updatePercentChangeColor(percentVolume, state.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL));
+                        }
+                        if (percentRate != null) {
+                            double rate = state.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL);
+                            percentRate.setText(String.format(" %.2f", rate) + "%");
+                            updatePercentChangeColor(percentRate, rate);
+                        }
+                        if (percentProfit != null) {
+//                            WalletManager.Balance balance = WalletManager.getInstance().getBalance();
+//                            String basisId = SettingsManager.sCryptoCurrencyIDs.get(item.getCurrency());
+//                            double totalBTC = balance.getTotalBtc(statistics);
+//                            double totalBasis = balance.getTotalInCripto(statistics,basisId);
+//                            double velocity = balance.getTotalVelocityCripto(statistics,totalBTC,basisId,balance.getItemById(item.getCurrency()));
+
+
+                            double totalUsd =  WalletManager.getInstance().getBalance().getTotalUSD(statistics);
+                            double weight = WalletManager.getInstance().getBalance().getPercentageWeight(item,state,totalUsd);
+                            double change = state.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL);
+
+
+                            double rate = weight*change/100;
+                            percentProfit.setText(String.format(" %.2f", rate) + "%");
+
+                            updatePercentChangeColor(percentProfit, rate);
                         }
                     }
                 }

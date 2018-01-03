@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import tbd.com.myballance.R;
+import tbd.com.myballance.SettingsManager;
 import tbd.com.myballance.layout.Tabs.WalletTab;
 
 /**
@@ -32,6 +33,10 @@ public class TabManager {
 //        transit(new WalletTab());
     }
 
+    protected void refresh(){
+        transit(new WalletTab());
+    }
+
     //Hook Fragments
     protected boolean makeTransition(int tabId){
         switch (tabId) {
@@ -41,9 +46,11 @@ public class TabManager {
 //                case R.id.navigation_dashboard:
 //                    transit(new DashboardTab());
 //                    return true;
-//                case R.id.navigation_refresh:
-//                    LogicManager.getInstance().refreshMarker();
-//                    return true;
+                case R.id.navigation_set_interval:
+
+                    SettingsManager.getInstance().CRIPTO_INTERVAL = (SettingsManager.getInstance().CRIPTO_INTERVAL + 1)%3;
+                    refresh();
+                    return true;
 //
 //                    return true;
         }

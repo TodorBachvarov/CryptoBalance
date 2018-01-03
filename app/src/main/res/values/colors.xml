@@ -10,5 +10,9 @@
     <color name="colorProfit_red">#ee1b1b</color>
     <color name="colorProfit_green">#47c026</color>
 
+    <color name="primary_text_color">#c2c2c2</color>
+    <color name="total_yellow">#FFD700</color>
+    <color name="total_green">#228b22</color>
+
 
 </resources>

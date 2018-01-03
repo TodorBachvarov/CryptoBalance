@@ -36,12 +36,12 @@ public class WalletManager {
     }
 
     private void loadBalance(WalletManagerListener listener){
-        mCryptoBalance = SettingsManager.getBalance();
+        mCryptoBalance = getCryptoBalanceMOC();
         listener.onBalanceLoaded(mCryptoBalance);
     }
 
     //TODO remove when loadingin is done
-    public Balance getCryptoBalance(){
+    private Balance getCryptoBalanceMOC(){
         return SettingsManager.getBalance();
     }
 
@@ -123,12 +123,12 @@ public class WalletManager {
             return getTotalEUR(statistics)* euroToBGN;
         }
 
-        public double getTotalVelocityUSD(CoinMarketStatistics statistics, final double total){
+        public double getTotalVelocityUSD(CoinMarketStatistics statistics, final double total, final int interval){
             return getStatistics(statistics, new Listener() {
                 @Override
                 public double getTotal(double value, CoinMarketStateInfo stat) {
                     if(stat!=null && value>0)
-                        return ((stat.getPriceUsd()*value)/total) * stat.getChangeLasHour();
+                        return ((stat.getPriceUsd()*value)/total) * (stat.getChange(interval));
                     else
                         return 0;
                 }
@@ -152,7 +152,7 @@ public class WalletManager {
                             double itemWeight = getPercentageWeight(item, stat, totalInBTC, false);
 
                             //How much we gain from this stat - the oportunity if this weight was in Basis cripto (- what would be my price if this lite coin was in ether (basis = ether))
-                            return (itemWeight * stat.getChangeLasHour() / 100) - (itemWeight * basisCoin.getChangeLasHour()/100);
+                            return (itemWeight * stat.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL) / 100) - (itemWeight * basisCoin.getChange(SettingsManager.getInstance().CRIPTO_INTERVAL)/100);
                                     //Other representation - the difference between tha changes (coin - basis) and how much value it reflects - in percentage
                                     //(stat.getChangeLasHour() - basisCoin.getChangeLasHour())* itemWeight /100 /*to percentage*/
                         } else {

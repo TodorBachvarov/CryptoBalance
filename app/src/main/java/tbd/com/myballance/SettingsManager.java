@@ -12,6 +12,7 @@ import tbd.com.myballance.logic.WalletManager;
 
 public class SettingsManager {
     public static String CRIPTO_BASIS = "BTC";
+    public static int CRIPTO_INTERVAL = TimeInterval.HOUR_INTERVAl;
     public static ArrayList<String> BASIS_ORDER ;
     private static SettingsManager sInstance;
 
@@ -40,9 +41,12 @@ public class SettingsManager {
         sCryptoCurrencyIDs.put("LTC","litecoin");
         sCryptoCurrencyIDs.put("DASH","dash");
         sCryptoCurrencyIDs.put("IOTA","iota");
-        sCryptoCurrencyIDs.put("XPR","ripple");
+        sCryptoCurrencyIDs.put("XRP","ripple");
         sCryptoCurrencyIDs.put("ADA","cardano");
         sCryptoCurrencyIDs.put("ZEC","zcash");
+        sCryptoCurrencyIDs.put("EOS","eos");
+        sCryptoCurrencyIDs.put("XMR","monero");
+        sCryptoCurrencyIDs.put("SNT","status");
     }
 
     private static void initCriptoBasisOrder(){
@@ -55,7 +59,7 @@ public class SettingsManager {
         BASIS_ORDER.add("LTC");
         BASIS_ORDER.add("DASH");
         BASIS_ORDER.add("IOTA");
-        BASIS_ORDER.add("XPR");
+        BASIS_ORDER.add("XRP");
         BASIS_ORDER.add("ADA");
         BASIS_ORDER.add("ZEC");
     }
@@ -69,19 +73,39 @@ public class SettingsManager {
     public static WalletManager.Balance getBalance(){
         //TODO Load from DB / SharedPrefs/ Back end
         WalletManager.Balance mocBalance = new WalletManager.Balance();
-        mocBalance.add(new OwnedCryptoItem("BTC",0.11401228));
-        mocBalance.add(new OwnedCryptoItem("ETH", 2.01));
-        mocBalance.add( new OwnedCryptoItem("IOTA", 104.0));
-        mocBalance.add( new OwnedCryptoItem("LTC", 1.61142376));
-        mocBalance.add(new OwnedCryptoItem("DASH", 0.36906672));
-        mocBalance.add(new OwnedCryptoItem("ETC", 3.2));
+        mocBalance.add(new OwnedCryptoItem("BTC",   0.11401228));
+        mocBalance.add(new OwnedCryptoItem("ETH",   2.01));
+        mocBalance.add(new OwnedCryptoItem("DASH",  0.36906672));
+        mocBalance.add(new OwnedCryptoItem("LTC",   1.01142));
+        mocBalance.add(new OwnedCryptoItem("IOTA",  55.0));
+        mocBalance.add(new OwnedCryptoItem("ADA",   152.8470));
+        mocBalance.add(new OwnedCryptoItem("ETC",   3.2));
+        mocBalance.add(new OwnedCryptoItem("XRP",   30.0));
+        mocBalance.add(new OwnedCryptoItem("SNT",   104.0));
+        mocBalance.add(new OwnedCryptoItem("XMR",   0.11));
+        mocBalance.add(new OwnedCryptoItem("EOS",   4.0));
 
-        mocBalance.add(new OwnedCryptoItem("BCH", 0.0000001));
-        mocBalance.add(new OwnedCryptoItem("BTG", 0.0000001));
-        mocBalance.add(new OwnedCryptoItem("ZEC", 0.0000001));
-        mocBalance.add(new OwnedCryptoItem("ADA", 0.0000001));
-        mocBalance.add(new OwnedCryptoItem("XPR", 0.0000001));
+        mocBalance.add(new OwnedCryptoItem("BCH",   0.0000001));
+        mocBalance.add(new OwnedCryptoItem("BTG",   0.0000001));
+        mocBalance.add(new OwnedCryptoItem("ZEC",   0.0000001));
+
+
 
         return  mocBalance;
+    }
+
+    public static class TimeInterval{
+        public final static int HOUR_INTERVAl=0;
+        public final static int DAY_INTERVAL=1;
+        public final static int WEEK_INTERVAL=2;
+
+        public static String getLabel(int interval){
+            switch (interval){
+                case DAY_INTERVAL: return "DAY";
+                case WEEK_INTERVAL: return "WEEK";
+
+                default : return "HOUR";
+            }
+        }
     }
 }

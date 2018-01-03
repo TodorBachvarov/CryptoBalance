@@ -2,23 +2,68 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/container"
     android:layout_width="match_parent"  android:layout_height="60dip">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"  android:layout_height="60dip"
+        android:layout_weight="0.25">
     <TextView
-        android:id="@+id/currency"
+        android:id="@+id/currency" android:text="BTC"
         android:layout_width="100dip" android:layout_height="match_parent"
         android:layout_weight="0.25" android:textAlignment="center" />
-
     <TextView
-        android:id="@+id/value"
+        android:id="@+id/currency_percent" android:text="100%"
+        android:layout_width="100dip" android:layout_height="match_parent"
+        android:layout_weight="0.25" android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"  android:layout_height="60dip"
+        android:layout_weight="0.25">
+
+        <TextView
+            android:id="@+id/value"
+            android:layout_width="100dip"
+            android:layout_height="35dp"
+            android:layout_weight="0.25"
+            android:text="0.2"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/value_percent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.25"
+            android:text="50%"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"  android:layout_height="60dip"
+        android:layout_weight="0.25">
+    <TextView
+        android:id="@+id/wallet_item_dollar_rate" android:text="1350 $"
         android:layout_width="100dip" android:layout_height="match_parent"
         android:layout_weight="0.25" android:textAlignment="center"/>
-
     <TextView
-        android:id="@+id/wallet_item_dollar_rate"
+        android:id="@+id/wallet_item_dollar_rate_percent" android:text="10.5%"
         android:layout_width="100dip" android:layout_height="match_parent"
         android:layout_weight="0.25" android:textAlignment="center"/>
+    </LinearLayout>
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"  android:layout_height="60dip"
+        android:layout_weight="0.25">
     <TextView
-        android:id="@+id/wallet_item_dollar_value"
+        android:id="@+id/wallet_item_dollar_value" android:text="700 $"
         android:layout_width="100dip" android:layout_height="match_parent"
         android:textAlignment="center" android:layout_weight="0.25"/>
+    <TextView
+        android:id="@+id/wallet_item_dollar_value_percent" android:text="10.5%"
+        android:layout_width="100dip" android:layout_height="match_parent"
+        android:textAlignment="center" android:layout_weight="0.25"/>
+    </LinearLayout>
 </LinearLayout>
