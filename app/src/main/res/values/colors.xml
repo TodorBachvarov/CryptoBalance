@@ -13,6 +13,7 @@
     <color name="primary_text_color">#c2c2c2</color>
     <color name="total_yellow">#FFD700</color>
     <color name="total_green">#228b22</color>
+    <color name="selection_color">#805cfffc</color>
 
 
 </resources>

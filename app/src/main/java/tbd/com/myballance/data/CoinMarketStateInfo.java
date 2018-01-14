@@ -50,9 +50,9 @@ public class CoinMarketStateInfo {
             String percentageChangeHour = state.optString("percent_change_1h", null);
             String percentageChangeDay = state.optString("percent_change_24h", null);
             String percentageChangeWeek = state.optString("percent_change_7d", null);
-            stateResult.setChangeLastHour(percentageChangeHour!=null ? Double.valueOf(percentageChangeHour):0.0);
-            stateResult.setChangeLastDay(percentageChangeDay!=null ? Double.valueOf(percentageChangeDay):0.0);
-            stateResult.setChangeLastWeek(percentageChangeWeek!=null ? Double.valueOf(percentageChangeWeek):0.0);
+            stateResult.setChangeLastHour(percentageChangeHour!=null && !"null".equals(percentageChangeHour) ? Double.valueOf(percentageChangeHour):0.0);
+            stateResult.setChangeLastDay(percentageChangeDay!=null && !"null".equals(percentageChangeDay) ? Double.valueOf(percentageChangeDay):0.0);
+            stateResult.setChangeLastWeek(percentageChangeWeek!=null && !"null".equals(percentageChangeWeek) ? Double.valueOf(percentageChangeWeek):0.0);
         }
 
         return stateResult;

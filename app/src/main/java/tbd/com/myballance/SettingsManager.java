@@ -47,6 +47,9 @@ public class SettingsManager {
         sCryptoCurrencyIDs.put("EOS","eos");
         sCryptoCurrencyIDs.put("XMR","monero");
         sCryptoCurrencyIDs.put("SNT","status");
+        sCryptoCurrencyIDs.put("XLM","stellar");
+        sCryptoCurrencyIDs.put("TRX","tron");
+        sCryptoCurrencyIDs.put("NEO","neo");
     }
 
     private static void initCriptoBasisOrder(){
@@ -73,17 +76,32 @@ public class SettingsManager {
     public static WalletManager.Balance getBalance(){
         //TODO Load from DB / SharedPrefs/ Back end
         WalletManager.Balance mocBalance = new WalletManager.Balance();
-        mocBalance.add(new OwnedCryptoItem("BTC",   0.11401228));
+        mocBalance.add(new OwnedCryptoItem("BTC",   0.073));
+        mocBalance.add(new OwnedCryptoItem("BTC",   0.0499));
         mocBalance.add(new OwnedCryptoItem("ETH",   2.01));
-        mocBalance.add(new OwnedCryptoItem("DASH",  0.36906672));
-        mocBalance.add(new OwnedCryptoItem("LTC",   1.01142));
-        mocBalance.add(new OwnedCryptoItem("IOTA",  55.0));
+//        mocBalance.add(new OwnedCryptoItem("DASH",  0.28406443));
+        mocBalance.add(new OwnedCryptoItem("DASH",  0.00106));
+        mocBalance.add(new OwnedCryptoItem("LTC",   0.51142));
+//        mocBalance.add(new OwnedCryptoItem("LTC",   1.189));
+//        mocBalance.add(new OwnedCryptoItem("LTC",   0.42443137 ));
+//        mocBalance.add(new OwnedCryptoItem("LTC",   0.00492598 ));
+        mocBalance.add(new OwnedCryptoItem("IOTA",  72.0));
         mocBalance.add(new OwnedCryptoItem("ADA",   152.8470));
-        mocBalance.add(new OwnedCryptoItem("ETC",   3.2));
-        mocBalance.add(new OwnedCryptoItem("XRP",   30.0));
+//        mocBalance.add(new OwnedCryptoItem("ETC",   3.1));
+        mocBalance.add(new OwnedCryptoItem("ETC",   0.361));
+        mocBalance.add(new OwnedCryptoItem("XRP",   0.07000000));
+//        mocBalance.add(new OwnedCryptoItem("BTC",   0.00233239));
+//        mocBalance.add(new OwnedCryptoItem("ETH",   0.04302029));
+//        mocBalance.add(new OwnedCryptoItem("IOTA",   17.01));
+//        mocBalance.add(new OwnedCryptoItem("NEO",   0.4389825));
         mocBalance.add(new OwnedCryptoItem("SNT",   104.0));
-        mocBalance.add(new OwnedCryptoItem("XMR",   0.11));
-        mocBalance.add(new OwnedCryptoItem("EOS",   4.0));
+//        mocBalance.add(new OwnedCryptoItem("XLM",   54.0));
+        mocBalance.add(new OwnedCryptoItem("XLM",   0.94));
+        mocBalance.add(new OwnedCryptoItem("TRX",   793.423));
+//        mocBalance.add(new OwnedCryptoItem("TRX",   217.00));
+        mocBalance.add(new OwnedCryptoItem("XMR",   0.10989869));
+//        mocBalance.add(new OwnedCryptoItem("EOS",   4.0));
+        mocBalance.add(new OwnedCryptoItem("EOS",   7.76598905));
 
         mocBalance.add(new OwnedCryptoItem("BCH",   0.0000001));
         mocBalance.add(new OwnedCryptoItem("BTG",   0.0000001));
